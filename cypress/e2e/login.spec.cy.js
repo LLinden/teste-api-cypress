@@ -12,7 +12,6 @@ describe("Login - Teste da API ServeRest", () => {
     }).then((response) => {
       expect(response.status).to.eq(200);
       expect(response.body.message).to.eq("Login realizado com sucesso")
-      cy.log(response.body.authorization)
     });
   });
 });

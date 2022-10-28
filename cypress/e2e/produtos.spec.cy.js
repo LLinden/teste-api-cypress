@@ -1,5 +1,5 @@
 /// <reference types="cypress" />
-import contrato from '../contracts/produtos.contract'
+import contrato from "../contracts/produtos.contract";
 
 describe("Testes da Funcionalidade Produtos", () => {
   let token;
@@ -9,10 +9,10 @@ describe("Testes da Funcionalidade Produtos", () => {
     });
   });
 
-  it('Deve validar contrato de produtos', () => {
-    cy.request('produtos').then(response => {
-        return contrato.validateAsync(response.body)
-    })
+  it("Deve validar contrato de produtos", () => {
+    cy.request("produtos").then((response) => {
+      return contrato.validateAsync(response.body);
+    });
   });
 
   it("Listar produtos", () => {
@@ -20,7 +20,6 @@ describe("Testes da Funcionalidade Produtos", () => {
       method: "GET",
       url: "produtos",
     }).then((response) => {
-      expect(response.body.produtos[0].nome).to.eq("Logitech MX Vertical");
       expect(response.status).to.eq(200);
       expect(response.body).to.have.property("produtos");
       expect(response.duration).to.be.lessThan(20);
@@ -29,19 +28,13 @@ describe("Testes da Funcionalidade Produtos", () => {
 
   it("Cadastrar produto", () => {
     let produto = `Produto EBAC ${Math.floor(Math.random() * 100000000)}`;
-    cy.request({
-      method: "POST",
-      url: "produtos",
-      headers: {
-        authorization: token,
-      },
-      body: {
-        nome: produto,
-        preco: 470,
-        descricao: "Produto novo",
-        quantidade: 100,
-      },
-    }).then((response) => {
+    cy.cadastrarProduto(
+      token,
+      produto,
+      250,
+      "Descrição do produto novo",
+      100
+    ).then((response) => {
       expect(response.status).to.eq(201);
       expect(response.body.message).to.eq("Cadastro realizado com sucesso");
     });
@@ -61,6 +54,7 @@ describe("Testes da Funcionalidade Produtos", () => {
   });
 
   it("Deve editar um produto já cadastrado", () => {
+    let produto = `Produto EBAC ${Math.floor(Math.random() * 100000000)}`;
     cy.request("produtos").then((response) => {
       let id = response.body.produtos[0]._id;
       cy.request({
@@ -68,7 +62,7 @@ describe("Testes da Funcionalidade Produtos", () => {
         url: `produtos/${id}`,
         headers: { authorization: token },
         body: {
-          nome: "Produto EBAC novo",
+          nome: produto,
           preco: 100,
           descricao: "Produto editado",
           quantidade: 100,
